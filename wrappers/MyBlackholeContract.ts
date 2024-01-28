@@ -1,4 +1,4 @@
-import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode } from '@ton/core';
+import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode, TupleReader } from '@ton/core';
 
 export type MyBlackholeContractConfig = {
     counter_value: number,
@@ -17,6 +17,10 @@ export function myBlackholeContractConfigToCell(config: MyBlackholeContractConfi
 
 export class MyBlackholeContract implements Contract {
     constructor(readonly address: Address, readonly init?: { code: Cell; data: Cell }) {}
+
+    static createFromAddress(address: Address) {
+        return new MyBlackholeContract(address);
+    }
 
     static createFromConfig(config: MyBlackholeContractConfig, code: Cell, workchain = 0) {
         const data = myBlackholeContractConfigToCell(config);
@@ -61,7 +65,16 @@ export class MyBlackholeContract implements Contract {
     }
 
     async getFullState(provider: ContractProvider) {
-        const { stack: r } = await provider.get("dump_full_state", []);
+        const { stack } = await provider.get("dump_full_state", []);
+        return MyBlackholeContract.parseGetFullState(stack)
+    }
+
+    async getBalance(provider: ContractProvider) {
+        const { stack } = await provider.get('show_balance', [])
+        return MyBlackholeContract.parseGetBalance(stack)
+    }
+
+    static parseGetFullState(r: TupleReader) {
         return {
             counter_value: r.readNumber(),
             recent_inc_addr: r.readAddressOpt(),
@@ -70,8 +83,7 @@ export class MyBlackholeContract implements Contract {
         };
     }
 
-    async getBalance(provider: ContractProvider) {
-        const { stack: r } = await provider.get('show_balance', [])
-        return r.readNumber()
+    static parseGetBalance(r: TupleReader) {
+        return r.readNumber()       // in nanotons
     }
 }
