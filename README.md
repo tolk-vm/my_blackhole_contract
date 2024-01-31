@@ -1,26 +1,16 @@
-# my_blackhole_contract
+# Example TON contract
 
-## Project structure
+A simple experiment with TON: a contract written in FunC, that stores `counter_value`, `recent_inc_addr` and 
+some other stuff in a storage cell, with some getters (`method_id`) and some actions as opcode inside `recv_internal`.
 
--   `contracts` - source code of all the smart contracts of the project and their dependencies.
--   `wrappers` - wrapper classes (implementing `Contract` from ton-core) for the contracts, including any [de]serialization primitives and compilation functions.
--   `tests` - tests for the contracts.
--   `scripts` - scripts used by the project, mainly the deployment scripts.
+Uses [blueprint](https://github.com/ton-org/blueprint) as a testing and deployment framework. 
+Hence, `yarn blueprint run` to interactively execute any script inside `scripts/`.
 
-## How to use
+Besides the contract and tests, there are some experiments to call getters and actions on an already 
+deployed contract [to testnet](https://testnet.tonscan.org/address/EQD4Nu_attpQdAHKaSOKSUwAfpJUrXIstF5yGqZvYr-RJT6e).
+Calling get methods (`method_id`) can be done via `TonClient` and `@orbs-network`.
+Invoking actions requires authorization via a real wallet or mnemonic (24 words in `.env`) 
+to pay for transactions on behalf of the user.
 
-### Build
-
-`npx blueprint build` or `yarn blueprint build`
-
-### Test
-
-`npx blueprint test` or `yarn blueprint test`
-
-### Deploy or run another script
-
-`npx blueprint run` or `yarn blueprint run`
-
-### Add a new contract
-
-`npx blueprint create ContractName` or `yarn blueprint create ContractName`
+There are also experiments with a [web app front-end](https://github.com/unserialize/my_blackhole_frontend) 
+to the same contract and [a Telegram bot](https://github.com/unserialize/my_blackhole_tg_bot).
