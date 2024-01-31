@@ -79,6 +79,19 @@ const ERR_UNKNOWN_OPCODE = 780;
         return ();
     }
 
+    ;; destroy the contract (by sending all money to owner with a special mode)
+    if (opcode == 4) {
+        cell msg = begin_cell()
+        .store_uint(0x18, 6)
+        .store_slice(owner_addr)
+        .store_coins(0)     ;; to be overwritten by mode
+        .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
+        .end_cell();
+
+        send_raw_message(msg, 128 + 32);
+        return ();
+    }
+
     throw(ERR_UNKNOWN_OPCODE);
 }
 

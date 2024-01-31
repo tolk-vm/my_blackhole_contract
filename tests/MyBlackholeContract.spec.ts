@@ -127,4 +127,17 @@ describe('MyBlackholeContract', () => {
             exitCode: 778,
         })
     })
+
+    it("should destroy by a special opcode", async () => {
+        const senderWallet = await blockchain.treasury('sender');
+        const ownerBalanceStart = await ownerWallet.getBalance()
+
+        await myBlackholeContract.sendDeposit(senderWallet.getSender(), toNano("10"));
+
+        const sendResult = await myBlackholeContract.sendPermanentlyDestroy(senderWallet.getSender(), toNano("0.5"));
+        expect(sendResult.events[sendResult.events.length - 1].type).toEqual('account_destroyed')
+
+        const ownerBalanceDelta = await ownerWallet.getBalance() - ownerBalanceStart
+        expect(ownerBalanceDelta).toBeGreaterThan(toNano("9"))
+    })
 });

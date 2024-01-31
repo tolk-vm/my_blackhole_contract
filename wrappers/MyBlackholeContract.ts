@@ -64,6 +64,15 @@ export class MyBlackholeContract implements Contract {
         });
     }
 
+    async sendPermanentlyDestroy(provider: ContractProvider, sender: Sender, valueMoney: bigint) {
+        let opcode = 4
+        return await provider.internal(sender, {
+            value: valueMoney,
+            sendMode: SendMode.PAY_GAS_SEPARATELY,
+            body: beginCell().storeUint(opcode, 32).endCell(),
+        });
+    }
+
     async getFullState(provider: ContractProvider) {
         const { stack } = await provider.get("dump_full_state", []);
         return MyBlackholeContract.parseGetFullState(stack)
